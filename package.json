@@ -1,0 +1,21 @@
+{
+  "main": "src/mini-window.js",
+  "module": "src/mini-window.js",
+  "type": "module",
+  "scripts": {
+    "serve": "wds --watch"
+  },
+
+  "dependencies": {
+    "lit": "^2.1.1",
+    "lit-element": "^3.1.1",
+    "lit-html": "^2.1.1"
+  },
+
+  "devDependencies": {
+    "@web/dev-server": "^0.1.29",
+    "@web/dev-server-legacy": "^0.1.7",
+    "@web/dev-server-rollup": "^0.3.14",
+    "@webcomponents/webcomponentsjs": "^2.6.0"
+  }
+}
