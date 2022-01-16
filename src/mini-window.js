@@ -200,6 +200,13 @@ export class MiniWindow extends LitElement {
     toggle() {
         return (this.style.display = this.style.display === 'none' ? 'flex' : 'none') !== 'none';
     }
+
+    /**
+     * Force open window
+     */
+    open() {
+        this.style.display = 'flex';
+    }
 }
 
 window.customElements.define('mini-window', MiniWindow);

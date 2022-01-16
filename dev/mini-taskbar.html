@@ -8,13 +8,21 @@
     <script type="module" src="../src/mini.js"></script>
     <script type="module" src="../src/mini-window.js"></script>
     <script type="module" src="../src/mini-taskbar.js"></script>
+    <script type="module" src="../src/mini-start-menu.js"></script>
+    <script type="module" src="../src/mini-start-menu-item.js"></script>
 </head>
 <body style="margin: 0; padding: 0;">
     <mini-taskbar alignment="top" width="100%" height="40px">
         <span slot="start" class="taskbar-start-button">Start</span>
-        <p slot="menu">
-            My Start Menu!
-        </p>
+        <div slot="start-menu">
+            <mini-start-menu>
+                <div slot="shortcuts"></div>
+                <div slot="items">
+                    <mini-start-menu-item title="Sample Item" task="sampleWindow" />
+                </div>
+                <div slot="favorites"></div>
+            </mini-start-menu>
+        </div>
     </mini-taskbar>
 
     <!-- My Application Style -->

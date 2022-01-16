@@ -4,7 +4,6 @@ import {LitElement, html, css} from 'lit';
 import MINI from "./mini";
 import {MiniTaskController} from "./mini-task-controller";
 import {classMap} from 'lit/directives/class-map.js';
-import {queryAssignedElements} from "lit-element";
 import {MiniUtils} from "./mini-utils";
 
 /**
@@ -18,8 +17,6 @@ export class MiniTaskbar extends LitElement {
       :host {
         display: flex;
         position: absolute;
-        pading: 0;
-        margin: 0;
         cursor: pointer;
         user-select: none;
       }
@@ -47,6 +44,27 @@ export class MiniTaskbar extends LitElement {
         border: 1px solid black;
         padding: 2px;
       }
+      
+      .mini-taskbar-tasks {
+        display: flex;
+        flex: 1;
+        margin: 0 2px;
+      }
+          
+      .mini-taskbar-task {
+        display: flex;
+        flex-direction: row;
+        border: 1px solid black;
+        padding: 2px;
+        align-items: center;
+        justify-items: center;
+      }
+          
+      .mini-taskbar-start-menu {
+        display: flex;
+        position: absolute;
+        z-index: 999; 
+      }
     `;
     }
 
@@ -66,10 +84,11 @@ export class MiniTaskbar extends LitElement {
          * @type {MiniTaskController}
          */
         this.taskController = MINI.store.getService('MiniTaskController').instance;
+
+        document.addEventListener('mouseup', (event) => this.closeStartMenu(event));
     }
 
     render() {
-
         this.width = this.width ? this.width : '100%';
         this.height = this.height ? this.height : '40px';
 
@@ -104,7 +123,7 @@ export class MiniTaskbar extends LitElement {
         return html`
       <div class="mini-taskbar">
           <slot name="start" class="mini-taskbar-start" @click="${this.toggleStartMenu}"></slot>
-          <slot name="start-menu" class="mini-taskbar-start-menu"></slot>
+          <slot name="start-menu" class="mini-taskbar-start-menu" style="display: none; margin-top: ${tmpHeight}"></slot>
           <div class="mini-taskbar-tasks">
               ${this.taskController.listAll().map(value => html`
                     <div class="mini-taskbar-task ${classMap({'mini-taskbar-task-visible': value.isVisible})}" @click="${this.openWindow(value.id)}">${value.name}</div>
@@ -114,7 +133,11 @@ export class MiniTaskbar extends LitElement {
     `;
     }
 
-    toggleStartMenu() {
+    /**
+     * Set visibility of StartMenu
+     * @param {Event} event
+     */
+    toggleStartMenu(event) {
         const startButton = MiniUtils.queryOneSlot('start', this);
         const startMenu = MiniUtils.queryOneSlot('start-menu', this);
 
@@ -128,11 +151,28 @@ export class MiniTaskbar extends LitElement {
     }
 
     /**
+     * Close StartMenu
+     * @param {Event} event
+     */
+    closeStartMenu(event) {
+        const startButton = MiniUtils.queryOneSlot('start', this);
+        const startMenu = MiniUtils.queryOneSlot('start-menu', this);
+
+        if(event.target.slot === 'start' || event.target.tagName === 'MINI-TASKBAR') { return false; }
+        if(startMenu.style.display !== 'none') {
+            this.toggleStartMenu(event);
+        }
+    }
+
+    /**
      * Open window with task ID
      * @param {Number} id
      */
     openWindow(id) {
-        this.taskController.getTask(id).window.toggle();
+        const task = this.taskController.getTask(id);
+        if(task !== undefined) {
+            task.window.toggle();
+        }
     }
 }
 
