@@ -1,6 +1,7 @@
 /**
  * Import Model/Utils classes
  */
+import {MiniUtils} from "./mini-utils";
 import {MiniStore} from "./mini-store";
 
 /**
@@ -8,17 +9,14 @@ import {MiniStore} from "./mini-store";
  */
 import {MiniTaskController} from "./mini-task-controller";
 
-/**
- * Import Components
- */
-import {MiniWindow} from "./mini-window";
-import {MiniTasktray} from "./mini-tasktray";
-import {MiniTaskbar} from "./mini-taskbar";
-
 class Mini {
 
     constructor() {
         console.info('Mini library version : 0.0.0a');
+        /**
+         * Store of services and messages...
+         * @type {MiniStore}
+         */
         this.store = null;
     }
 

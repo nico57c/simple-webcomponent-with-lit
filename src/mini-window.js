@@ -184,6 +184,22 @@ export class MiniWindow extends LitElement {
             that.onmouseup = null;
         };
     }
+
+    /**
+     * Return visibility of window
+     * @returns {boolean}
+     */
+    isVisible() {
+        return this.style.display !== 'none';
+    }
+
+    /**
+     * Display window.
+     * @return {boolean} Visibility of window displayed === true, hidden === false
+     */
+    toggle() {
+        return (this.style.display = this.style.display === 'none' ? 'flex' : 'none') !== 'none';
+    }
 }
 
 window.customElements.define('mini-window', MiniWindow);

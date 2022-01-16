@@ -52,10 +52,22 @@ export class MiniTaskController {
     }
 
     /**
+     * Return tasks saved in store
+     * @param id
+     * @returns {{id: Number, name: String, creationDate: Date, window: MiniWindow}}
+     */
+    getTask(id) {
+        return this.tasks.find(value =>
+            (id === undefined && value.name === name) ||
+            (id !== undefined && value.id === id)
+        );
+    }
+
+    /**
      * ListAll tasks with name, id and createDate.
-     * @returns {{name: String, id: Number, creationDate: Date}[]}
+     * @returns {{name: String, id: Number, creationDate: Date, isVisible: Boolean}[]}
      */
     listAll() {
-        return this.tasks.map(value => ({ name: value.name, id: value.id, creationDate: value.creationDate}) );
+        return this.tasks.map(value => ({ name: value.name, id: value.id, creationDate: value.creationDate, isVisible: value.window.isVisible()}) );
     }
 }

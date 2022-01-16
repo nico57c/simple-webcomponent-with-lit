@@ -60,15 +60,12 @@ export class MiniStore {
 
     /**
      * getService from store
-     * @param {string|InstanceType} name
+     * @param {string} name
      * @returns {{id: Number, name: String, instance: *}}
      * @public
      */
     getService(name) {
-        return this.services.find(value =>
-            (name instanceof InstanceType && value.instance instanceof name) ||
-            (name instanceof String && value.name === name)
-        );
+        return this.services.find(value => value.name === name);
     }
 
     /**
