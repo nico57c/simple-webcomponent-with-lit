@@ -4,9 +4,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 
 export default {
-    input: 'src/mini-window.js',
+    input: 'src/mini.js',
     output: {
-        file: 'mini-window.bundled.js',
+        file: './build/mini.bundled.js',
         format: 'esm',
     },
     onwarn(warning) {
@@ -15,12 +15,13 @@ export default {
         }
     },
     plugins: [
-        replace({'Reflect.decorate': 'undefined'}),
+        replace({'Reflect.decorate': 'undefined', preventAssignment: true}),
         resolve(),
         terser({
             ecma: 2017,
             module: true,
             warnings: true,
+            format: { comments: false },
             mangle: {
                 properties: {
                     regex: /^__/,

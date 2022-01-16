@@ -184,15 +184,6 @@ export class MiniWindow extends LitElement {
             that.onmouseup = null;
         };
     }
-
-    /**
-     * Formats a greeting
-     * @param name {string} The name to say "Hello" to
-     * @returns {string} A greeting directed at `name`
-     */
-    sayHello(name) {
-        return `Hello, ${name}`;
-    }
 }
 
 window.customElements.define('mini-window', MiniWindow);
