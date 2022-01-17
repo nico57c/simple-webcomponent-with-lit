@@ -27,6 +27,5 @@ class Mini {
     }
 }
 
-const MINI = new Mini();
+globalThis.MINI = new Mini();
 MINI.init();
-export default MINI;

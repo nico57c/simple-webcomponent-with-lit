@@ -1,5 +1,4 @@
 import {LitElement, html, css} from 'lit';
-import MINI from "./mini";
 
 /**
  * Mini StartMenu Item inside web page
@@ -54,13 +53,21 @@ export class MiniStartMenuItem extends LitElement {
     /**
      * OpenWindow
      * @param {String} task
+     * @param {Function} callback
      */
-    openWindow(task) {
-        const taskObj = this.taskController.getTask(task);
+    openWindow(task, callback) {
+        /**
+         * @type {{id: Number, name: String, creationDate: Date, window: MiniWindow}}
+         */
+        const taskObj = this.taskController.getTask(task, task);
+
         if(taskObj !== undefined) {
             taskObj.window.open();
         } else {
-            console.info('Task not found with id : ' + task);
+            console.info('Task not found with id or name : ' + task);
+            if(callback !== undefined) {
+                document.append(callback(this.taskController));
+            }
         }
     }
 }

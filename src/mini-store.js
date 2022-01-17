@@ -85,15 +85,19 @@ export class MiniStore {
      * Send a message with a content
      * @param {string} messageId
      * @param {*} messageContent
-     * @returns {boolean}
      */
     sendMessage(messageId, messageContent) {
-        const message = this.messages.find(value => value.id === messageId);
-        if(message === undefined) {
-            return false;
+        let messageI;
+        if( ( messageI = this.messages.findIndex((value => value.id === messageId)) ) === -1) {
+            console.info('Create new messageId in store \'' + messageId + '\'');
+            messageI = this.messages.push({
+                id: messageId,
+                subject: new Subject()
+            }) - 1;
         }
-        message.subject.next(messageContent);
-        return true;
+        console.info('Send message \'' + messageId + '\' to store with content \'' + JSON.stringify(messageContent) + '\', observed : \'' +  this.messages[messageI].subject.observed + '\'')
+
+        this.messages[messageI].subject.next(messageContent);
     }
 
     /**
@@ -118,11 +122,12 @@ export class MiniStore {
      */
     subscribeToMessage(messageId) {
         let messageI;
-        if( ( messageI = this.messages.findIndex((value => value.id === messageId)) ) === undefined) {
-            this.messages.push({
+        if( ( messageI = this.messages.findIndex((value => value.id === messageId)) ) === -1) {
+            console.info('Create new messageId in store \'' + messageId + '\'');
+            messageI = this.messages.push({
                 id: messageId,
                 subject: new Subject()
-            });
+            }) - 1;
         }
         return this.messages[messageI].subject;
     }

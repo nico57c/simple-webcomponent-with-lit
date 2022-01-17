@@ -1,7 +1,6 @@
 // noinspection JSSuspiciousNameCombination
 
 import {LitElement, html, css} from 'lit';
-import MINI from "./mini";
 import {MiniTaskController} from "./mini-task-controller";
 import {classMap} from 'lit/directives/class-map.js';
 import {MiniUtils} from "./mini-utils";
@@ -52,12 +51,16 @@ export class MiniTaskbar extends LitElement {
       }
           
       .mini-taskbar-task {
-        display: flex;
+        display: none;
         flex-direction: row;
         border: 1px solid black;
         padding: 2px;
         align-items: center;
         justify-items: center;
+      }
+          
+      .mini-taskbar-task-visible {
+        display: flex;
       }
           
       .mini-taskbar-start-menu {
@@ -86,6 +89,10 @@ export class MiniTaskbar extends LitElement {
         this.taskController = MINI.store.getService('MiniTaskController').instance;
 
         document.addEventListener('mouseup', (event) => this.closeStartMenu(event));
+
+        MINI.store.subscribeToMessage('MiniWindowUpdated').subscribe(value => {
+            this.requestUpdate();
+        });
     }
 
     render() {
@@ -126,7 +133,7 @@ export class MiniTaskbar extends LitElement {
           <slot name="start-menu" class="mini-taskbar-start-menu" style="display: none; margin-top: ${tmpHeight}"></slot>
           <div class="mini-taskbar-tasks">
               ${this.taskController.listAll().map(value => html`
-                    <div class="mini-taskbar-task ${classMap({'mini-taskbar-task-visible': value.isVisible})}" @click="${this.openWindow(value.id)}">${value.name}</div>
+                    <div class="mini-taskbar-task ${classMap({'mini-taskbar-task-visible': value.state !== 'closed'})}" @click="${this.openWindow}" taskid="${value.id}">${value.name}</div>
               `)}
          </div>
       </div>
@@ -166,10 +173,10 @@ export class MiniTaskbar extends LitElement {
 
     /**
      * Open window with task ID
-     * @param {Number} id
+     * @param {Event} event
      */
-    openWindow(id) {
-        const task = this.taskController.getTask(id);
+    openWindow(event) {
+        const task = this.taskController.getTask(event.target.attributes['taskid'].value);
         if(task !== undefined) {
             task.window.toggle();
         }

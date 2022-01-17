@@ -29,8 +29,10 @@ export class MiniTaskController {
             window: _window,
             creationDate:  Date.now(),
             id: null
-        });
+        }) - 1;
         this.tasks[id].id = id;
+
+        MINI.store.sendMessage('MiniTaskControllerUpdated', 1);
         return id;
     }
 
@@ -41,33 +43,36 @@ export class MiniTaskController {
      */
     closeTask(id, name = undefined) {
         const taskI = this.tasks.findIndex(value =>
-                (id === undefined && value.name === name) ||
+                (name !== undefined && value.name === name) ||
                 (id !== undefined && value.id === id)
             );
 
         if(taskI !== undefined) {
-            taskI.window.close();
+            this.tasks[taskI].window.close();
             this.tasks.splice(taskI, 1);
+            MINI.store.sendMessage('MiniTaskControllerUpdated', -1);
         }
     }
 
     /**
      * Return tasks saved in store
-     * @param id
+     * @param {number} id
+     * @param {string} name
      * @returns {{id: Number, name: String, creationDate: Date, window: MiniWindow}}
      */
-    getTask(id) {
+    getTask(id, name = undefined) {
         return this.tasks.find(value =>
-            (id === undefined && value.name === name) ||
-            (id !== undefined && value.id === id)
+            (name !== undefined && value.name === name) ||
+            (id !== undefined && value.id === parseInt(id))
         );
     }
 
     /**
      * ListAll tasks with name, id and createDate.
-     * @returns {{name: String, id: Number, creationDate: Date, isVisible: Boolean}[]}
+     * @returns {{name: String, id: Number, creationDate: Date, state: String}[]}
      */
     listAll() {
-        return this.tasks.map(value => ({ name: value.name, id: value.id, creationDate: value.creationDate, isVisible: value.window.isVisible()}) );
+        return this.tasks.map(value => ({ name: value.name, id: value.id, creationDate: value.creationDate, state: value.window.state}) );
+
     }
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>&lt;mini-taskbar > Demo</title>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    <script type="module" src="../src/mini.js"></script>
+    <script type="module" src="../src/mini-window.js"></script>
+    <script type="module" src="../src/mini-taskbar.js"></script>
+    <script type="module" src="../src/mini-start-menu.js"></script>
+    <script type="module" src="../src/mini-start-menu-item.js"></script>
+</head>
+<body style="margin: 0; padding: 0;">
+    <mini-taskbar alignment="top" width="100%" height="40px">
+        <span slot="start" class="taskbar-start-button">Start</span>
+        <div slot="start-menu">
+            <mini-start-menu>
+                <div slot="shortcuts"></div>
+                <div slot="items">
+                    <mini-start-menu-item title="Sample Item" task="sampleWindow" />
+                </div>
+                <div slot="favorites"></div>
+            </mini-start-menu>
+        </div>
+    </mini-taskbar>
+
+    <mini-window name="sampleWindow"
+                 title="This is a demo"
+                 x="200" y="200" width="500" height="500"
+                 closable minimizable resizable>
+        <div slot="body">Hello World!</div>
+    </mini-window>
+
+    <!-- My Application Style -->
+    <style>
+        .taskbar-start-button {
+            width: 100px;
+        }
+    </style>
+</body>
+</html>

@@ -74,6 +74,18 @@ export class MiniWindow extends LitElement {
     static get properties() {
         return {
             /**
+             * Autostart
+             * @type {boolean}
+             */
+            autostart: {type: Boolean},
+
+            /**
+             * Name of Window/Task
+             * @type {string}
+             */
+            name: {type: String},
+
+            /**
              * Title of window
              * @type {string}
              */
@@ -106,10 +118,28 @@ export class MiniWindow extends LitElement {
 
     constructor() {
         super();
+        this.state = 'closed';
     }
 
     render() {
 
+        if(this.taskId === undefined) {
+            /**
+             * TaskController
+             * @type {MiniTaskController}
+             */
+            this.taskController = MINI.store.getService('MiniTaskController').instance;
+            this.taskId = this.taskController.createTask(this.name, this);
+            console.info('Task \'' + this.name + '\' created with task id \'' + this.taskId + '\'');
+        }
+
+        if(this.autostart !== true) {
+            console.info('Window [' + this.name + ' / ' + this.taskId + '] is not rendered. To render it, call open method.');
+            this.close();
+            return ;
+        }
+
+        this.state = 'opened';
         this.title = this.title ? this.title : 'default title';
         this.actions = this.actions ? this.actions : [
             { name: 'Save', action: () => console.log('save clicked'), isDisabled: () => false },
@@ -119,8 +149,8 @@ export class MiniWindow extends LitElement {
         this.width = this.width ? this.width : 200;
         this.height = this.height ? this.height : 200;
 
-        let miniActions = [ this.closable ? html`<div class="mini-window-close">X</div>` : null,
-                            this.minimizable ? html`<div class="mini-window-minimize">-</div>` : null,
+        let miniActions = [ this.closable ? html`<div class="mini-window-close" @click=${this.close}>X</div>` : null,
+                            this.minimizable ? html`<div class="mini-window-minimize" @click=${this.minimize}>-</div>` : null,
         ];
 
         this.style.top = this.y ? this.y + 'px' : this.style.top;
@@ -129,7 +159,7 @@ export class MiniWindow extends LitElement {
         return html`
       <div class="mini-window" style="width: ${this.width}px; height: ${this.height}px;" draggable="true" @mousedown=${this.dragging.bind(this)} ondragstart="return false;">
           <div class="mini-window-header">
-              <div class="mini-window-title">${this.title}</div>
+              <div class="mini-window-title" alt="${this.name}">${this.title}</div>
               <div class="mini-window-miniactions">
                     ${miniActions}
               </div>
@@ -186,14 +216,6 @@ export class MiniWindow extends LitElement {
     }
 
     /**
-     * Return visibility of window
-     * @returns {boolean}
-     */
-    isVisible() {
-        return this.style.display !== 'none';
-    }
-
-    /**
      * Display window.
      * @return {boolean} Visibility of window displayed === true, hidden === false
      */
@@ -205,7 +227,42 @@ export class MiniWindow extends LitElement {
      * Force open window
      */
     open() {
+        this.autostart = true;
+        this.style.left = this.savedPosition.x;
         this.style.display = 'flex';
+        this.state = 'opened';
+        this.sendMessage();
+    }
+
+    /**
+     * Force close window but not task (which is possibly link with a menu item)
+     */
+    close() {
+        this.autostart = false;
+        this.style.display = 'none';
+        this.savedPosition = {x: this.style.left, y: this.style.top};
+        this.style.left = -1000;
+        this.state = 'closed';
+        this.sendMessage();
+    }
+
+    /**
+     * Force minimize window
+     */
+    minimize() {
+        this.autostart = false;
+        this.style.display = 'none';
+        this.savedPosition = {x: this.style.left, y: this.style.top};
+        this.style.left = -1000;
+        this.state = 'minimized';
+        this.sendMessage();
+    }
+
+    /**
+     * Send a message to store with new state of window
+     */
+    sendMessage() {
+        MINI.store.sendMessage('MiniWindowUpdated', {state: this.state, taskId: this.taskId, name: this.name});
     }
 }
 
