@@ -9,10 +9,9 @@ export class MiniWindow extends LitElement {
     static get styles() {
         return css`
       :host {
-        display: block;
+        display: flex;
         position: absolute;
-        min-width: 200px;
-        min-height: 200px;
+        background: transparent;
       }
       
       .mini-window,
@@ -65,7 +64,15 @@ export class MiniWindow extends LitElement {
 
       .mini-window-actions > button,
       .mini-window-miniactions > div {
-          margin-left: 8px;
+        margin-left: 8px;
+      }
+          
+      .mini-window-minimize,
+      .mini-window-collapse,
+      .mini-window-close {
+        padding: 0 .5em;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
       }
 
     `;
@@ -100,29 +107,24 @@ export class MiniWindow extends LitElement {
             /**
              * Parameters
              */
-            resizable: {type: Boolean}, closable: {type: Boolean}, minimizable:{type: Boolean},
+            resizable: {type: Boolean}, closable: {type: Boolean},
+            minimizable:{type: Boolean}, collapsible: {type: Boolean},
 
             /**
              * Actions in struct of functions called on click.
              * @type {object}
              */
             actions: {type: { name: String, action: Function, isDisabled: Function }},
-
-            /**
-             * Body of window which is pure html
-             * @type HTMLElement
-             */
-            body: {type: HTMLElement},
         };
     }
 
     constructor() {
         super();
         this.state = 'closed';
+        this.hideHtmlElement();
     }
 
     render() {
-
         if(this.taskId === undefined) {
             /**
              * TaskController
@@ -135,52 +137,61 @@ export class MiniWindow extends LitElement {
 
         if(this.autostart !== true) {
             console.info('Window [' + this.name + ' / ' + this.taskId + '] is not rendered. To render it, call open method.');
-            this.close();
+            this.hideHtmlElement();
             return ;
         }
 
-        this.state = 'opened';
         this.title = this.title ? this.title : 'default title';
+
         this.actions = this.actions ? this.actions : [
             { name: 'Save', action: () => console.log('save clicked'), isDisabled: () => false },
             { name: 'Cancel', action: () => console.log('cancel clicked'), isDisabled: () => false },
         ];
 
-        this.width = this.width ? this.width : 200;
-        this.height = this.height ? this.height : 200;
-
-        let miniActions = [ this.closable ? html`<div class="mini-window-close" @click=${this.close}>X</div>` : null,
-                            this.minimizable ? html`<div class="mini-window-minimize" @click=${this.minimize}>-</div>` : null,
+        let miniActions = [
+            this.closable ? html`<div class="mini-window-close" @click=${this.close}>&#215;</div>` : null,
+            this.minimizable ? html`<div class="mini-window-minimize" @click=${this.minimize}>&#8226;</div>` : null,
+            this.collapsible ? html`<div class="mini-window-collapse" @click=${this.collapse}>${this.state !== 'collapsed' ? html`&#94;` : html`&#172;` }</div>` : null
         ];
 
-        this.style.top = this.y ? this.y + 'px' : this.style.top;
-        this.style.left = this.x ? this.x + 'px' : this.style.left;
+        this.loadPosition();
+
+        let content = null;
+        if(this.state !== 'collapsed') {
+            content = html`
+                <div class="mini-window-content">
+                    <slot name="body"></slot>
+                </div>
+                <div class="mini-window-footer">
+                    <div class="mini-window-actions">
+                        ${this.actions.map((value, key) =>
+                            html`
+                                <button class='mini-window-action'
+                                        @click=${this.actions[key].action}
+                                        @disabled=${this.actions[key].isDisabled}>${value.name}
+                                </button>
+                            `
+                        )}
+                    </div>
+                </div>
+            `;
+        }
 
         return html`
-      <div class="mini-window" style="width: ${this.width}px; height: ${this.height}px;" draggable="true" @mousedown=${this.dragging.bind(this)} ondragstart="return false;">
-          <div class="mini-window-header">
-              <div class="mini-window-title" alt="${this.name}">${this.title}</div>
-              <div class="mini-window-miniactions">
-                    ${miniActions}
+          <div class="mini-window" draggable="true" ondragstart="return false;">
+              <div class="mini-window-header" @mousedown=${this.dragging.bind(this)}>
+                  <div class="mini-window-title">${this.title}</div>
+                  <div class="mini-window-miniactions">
+                        ${miniActions}
+                  </div>
               </div>
+              ${content}
           </div>
-          <div class="mini-window-content">
-              <slot name="body"></slot>
-          </div>
-          <div class="mini-window-footer">
-              <div class="mini-window-actions">
-                  ${this.actions.map((value, key) =>
-                      html`<button class='mini-window-action'
-                                   @click=${this.actions[key].action}
-                                   @disabled=${this.actions[key].isDisabled}>${value.name}</button>`
-                  )}
-              </div>
-          </div>
-      </div>
-    `;
+        `;
     }
 
     dragging(event) {
+        console.info('Mini-Window : dragging start');
         let that = this;
         let shiftX = event.clientX - this.getBoundingClientRect().left;
         let shiftY = event.clientY - this.getBoundingClientRect().top;
@@ -190,14 +201,17 @@ export class MiniWindow extends LitElement {
         // moves the ball at (pageX, pageY) coordinates
         // taking initial shifts into account
         function moveAt(pageX, pageY) {
-            that.style.left = pageX - shiftX + 'px';
-            that.style.top = pageY - shiftY + 'px';
+            that.style.left = (pageX - shiftX) + 'px';
+            that.style.top = (pageY - shiftY) + 'px';
+            that.savePosition(true);
         }
 
         function onMouseMove(event) {
             if(event.buttons === 0 ||
                event.pageX < 0 || event.pageY < 0 ||
-               event.pageX > document.defaultView.innerWidth || event.pageY > document.defaultView.innerHeight) {
+               event.pageX > document.defaultView.innerWidth ||
+               event.pageY > document.defaultView.innerHeight) {
+                console.info('Mini-Win : dragging stop');
                 document.removeEventListener('mousemove', onMouseMove);
                 that.onmouseup = null;
                 return;
@@ -210,27 +224,74 @@ export class MiniWindow extends LitElement {
 
         // drop the ball, remove unneeded handlers
         this.onmouseup = function() {
+            console.info('Mini-Window : dragging stop');
             document.removeEventListener('mousemove', onMouseMove);
             that.onmouseup = null;
         };
     }
 
+    savePosition(posOnly) {
+        if(posOnly === true) {
+            this.savedPosition = {...this.savedPosition, ...{ x: this.style.left, y: this.style.top }};
+        } else {
+            this.savedPosition = {
+                x: this.style.left, y: this.style.top,
+                width: this.style.width, height: this.style.height
+            };
+        }
+    }
+
+    loadPosition() {
+        if(this.savedPosition !== undefined) {
+            this.style.left = this.savedPosition.x;
+            this.style.top = this.savedPosition.y;
+            this.style.width = this.savedPosition.width;
+            this.style.height = this.savedPosition.height;
+        } else {
+            this.style.width = (this.width ? this.width : '200px');
+            this.style.height = (this.height ? this.height : '200px');
+            this.style.top = this.y ? this.y + 'px' : this.style.top;
+            this.style.left = this.x ? this.x + 'px' : this.style.left;
+
+            this.savePosition();
+        }
+
+        if(this.state === 'collapsed') {
+            this.style.height = this.renderRoot.querySelector('.mini-window-header').style.height;
+        }
+    }
+
+    hideHtmlElement() {
+        this.style.left = '0px'; this.style.top = '0px';
+        this.style.width = '0px'; this.style.height = '0px';
+    }
+
     /**
      * Display window.
+     * @param {boolean} force force to visible with true and hidden with false
      * @return {boolean} Visibility of window displayed === true, hidden === false
      */
-    toggle() {
-        return (this.style.display = this.style.display === 'none' ? 'flex' : 'none') !== 'none';
+    toggle(force = undefined) {
+        if(force !== undefined && force === true || force === undefined && this.style.display === 'none') {
+            this.autostart = true;
+            this.state = 'opened';
+            this.style.display = 'flex';
+            this.loadPosition();
+            return true;
+        } else if(force !== undefined && force === false || force === undefined && this.style.display !== 'none') {
+            this.autostart = false;
+            this.state = 'minimized';
+            this.style.display = 'none';
+            this.hideHtmlElement();
+            return false;
+        }
     }
 
     /**
      * Force open window
      */
     open() {
-        this.autostart = true;
-        this.style.left = this.savedPosition.x;
-        this.style.display = 'flex';
-        this.state = 'opened';
+        this.toggle(true);
         this.sendMessage();
     }
 
@@ -238,10 +299,7 @@ export class MiniWindow extends LitElement {
      * Force close window but not task (which is possibly link with a menu item)
      */
     close() {
-        this.autostart = false;
-        this.style.display = 'none';
-        this.savedPosition = {x: this.style.left, y: this.style.top};
-        this.style.left = -1000;
+        this.toggle(false);
         this.state = 'closed';
         this.sendMessage();
     }
@@ -250,11 +308,16 @@ export class MiniWindow extends LitElement {
      * Force minimize window
      */
     minimize() {
-        this.autostart = false;
-        this.style.display = 'none';
-        this.savedPosition = {x: this.style.left, y: this.style.top};
-        this.style.left = -1000;
-        this.state = 'minimized';
+        this.toggle(false);
+        this.sendMessage();
+    }
+
+    /**
+     * Force collapse window
+     */
+    collapse() {
+        this.state = this.state === 'opened' ? 'collapsed' : 'opened';
+        this.requestUpdate();
         this.sendMessage();
     }
 
