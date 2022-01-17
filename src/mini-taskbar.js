@@ -68,6 +68,12 @@ export class MiniTaskbar extends LitElement {
         position: absolute;
         z-index: 999; 
       }
+      
+      .mini-taskbar-clock {
+        display: flex;
+        align-items: center;
+        padding: 2px;
+      }
     `;
     }
 
@@ -129,13 +135,14 @@ export class MiniTaskbar extends LitElement {
 
         return html`
       <div class="mini-taskbar">
-          <slot name="start" class="mini-taskbar-start" @click="${this.toggleStartMenu}"></slot>
-          <slot name="start-menu" class="mini-taskbar-start-menu" style="display: none; margin-top: ${tmpHeight}"></slot>
-          <div class="mini-taskbar-tasks">
+         <slot name="start" class="mini-taskbar-start" @click="${this.toggleStartMenu}"></slot>
+         <slot name="start-menu" class="mini-taskbar-start-menu" style="display: none; margin-top: ${tmpHeight}"></slot>
+         <div class="mini-taskbar-tasks">
               ${this.taskController.listAll().map(value => html`
                     <div class="mini-taskbar-task ${classMap({'mini-taskbar-task-visible': value.state !== 'closed'})}" @click="${this.openWindow}" taskid="${value.id}">${value.name}</div>
               `)}
          </div>
+         <slot name="clock" class="mini-taskbar-clock"></slot>
       </div>
     `;
     }

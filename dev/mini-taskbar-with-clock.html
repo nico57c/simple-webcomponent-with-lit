@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>&lt;mini-taskbar > Demo</title>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    <script type="module" src="../src/mini.js"></script>
+    <script type="module" src="../src/mini-window.js"></script>
+    <script type="module" src="../src/mini-taskbar.js"></script>
+    <script type="module" src="../src/mini-clock.js"></script>
+</head>
+<body style="margin: 0; padding: 0;">
+    <mini-taskbar alignment="top" width="100%" height="40px">
+        <span slot="start" class="taskbar-start-button">Start</span>
+        <span slot="clock" class="taskbar-clock">
+            <mini-clock timeformat="HH:mm" dateformat="Y-MM-D"/>
+        </span>
+    </mini-taskbar>
+
+    <!-- My Application Style -->
+    <style>
+        .taskbar-start-button {
+            width: 100px;
+        }
+    </style>
+</body>
+</html>
