@@ -10,9 +10,35 @@
 </head>
 <body style="margin: 0; padding: 0;">
 <table style="width:100%; height:100%">
-    <tr><td style="height:100px"><mini-icon type="file"></mini-icon></td></tr>
-    <tr><td style="height:100px"><mini-icon type="directory"></mini-icon></td></tr>
-    <tr><td style="height:100px"><mini-icon type="shortcut"></mini-icon></td></tr>
+    <tr>
+        <td style="height:100px"><mini-icon type="file"></mini-icon></td>
+        <td style="height:100px">
+            <mini-icon type="file" >
+                <div slot="content" style="">JPG</div>
+            </mini-icon>
+        </td>
+        <td style="height:100px">
+            <mini-icon src="/dev/mini-icon-src.png" size="48">
+                <div slot="content" style="position:absolute; bottom: -1em; font-size: 2em">JPG</div>
+            </mini-icon>
+        </td>
+    </tr>
+    <tr>
+        <td style="height:100px"><mini-icon type="directory"></mini-icon></td>
+        <td style="height:100px">
+            <mini-icon type="directory">
+                <div slot="content" style="">Docs</div>
+            </mini-icon>
+        </td>
+    </tr>
+    <tr>
+        <td style="height:100px"><mini-icon type="shortcut"></mini-icon></td>
+        <td style="height:100px">
+            <mini-icon type="shortcut">
+                <div slot="content" style="margin-bottom: 10px">Link</div>
+            </mini-icon>
+        </td>
+    </tr>
 </table>
 
 </body>

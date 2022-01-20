@@ -73,6 +73,16 @@ export class MiniIcon extends LitElement {
             font-size: 1.8em;
             vertical-align: bottom;
           }
+          
+          .mini-icon-content {
+            font-size: .6em; 
+            font-family: monospace; 
+            flex-direction: row; 
+            justify-content: center; 
+            align-items: center; 
+            display: flex; 
+            flex: 1;
+          }
         `;
     }
 
@@ -88,14 +98,15 @@ export class MiniIcon extends LitElement {
         super();
         this.src = undefined;
         this.size = 32;
-        this.type = 'file';
+        this.type =  undefined;
         this.dragging = MiniUtils.dragging;
     }
 
     render() {
         let classes = {};
-        if(this.src === undefined) {
+        if(this.src === undefined || this.type !== undefined) {
             switch(this.type) {
+                default:
                 case 'file':
                     classes['mini-icon-file'] = true;
                 break;
@@ -106,16 +117,30 @@ export class MiniIcon extends LitElement {
                     classes['mini-icon-shortcut'] = true;
                 break;
             }
+        } else {
+            classes['mini-icon-src'] = true;
         }
 
         this.style.width = this.size + 'px';
         this.style.height = this.size + 'px';
 
         return html`
-          <div class="mini-icon ${classMap(classes)}" draggable="true" ondragstart="return false;" @mousedown=${this.dragging.bind(this)}></div>
+          <div class="mini-icon ${classMap(classes)}" draggable="true" ondragstart="return false;" @mousedown="${this.mouseDown.bind(this)}" @mouseup="${this.mouseUp.bind(this)}"
+               style="background-image: url('${this.src}');">
+              <slot name="content" class="mini-icon-content"></slot>
+          </div>
         `;
     }
 
+    mouseDown(event) {
+        this.savedZ = this.style.zIndex;
+        this.style.zIndex = 999;
+        this.dragging(event);
+    }
+
+    mouseUp(event) {
+        this.style.zIndex = this.savedZ;
+    }
 }
 
 window.customElements.define('mini-icon', MiniIcon);
