@@ -90,7 +90,9 @@ export class MiniIcon extends LitElement {
         return {
             src: {type: String},
             size: {type: Number},
-            type: {type: String}
+            type: {type: String},
+            target: {type: String},
+            draggable: {type: Boolean}
         };
     }
 
@@ -124,9 +126,16 @@ export class MiniIcon extends LitElement {
         this.style.width = this.size + 'px';
         this.style.height = this.size + 'px';
 
+        let draggableEvent = null
+        if(this.draggable === true) {
+            draggableEvent = html`
+                draggable="true" ondragstart="return false;"
+                @mousedown="${this.mouseDown.bind(this)}" @mouseup="${this.mouseUp.bind(this)}" 
+            `
+        }
+
         return html`
-          <div class="mini-icon ${classMap(classes)}" draggable="true" ondragstart="return false;" @mousedown="${this.mouseDown.bind(this)}" @mouseup="${this.mouseUp.bind(this)}"
-               style="background-image: url('${this.src}');">
+          <div class="mini-icon ${classMap(classes)}" ${draggableEvent} style="background-image: url('${this.src}');">
               <slot name="content" class="mini-icon-content"></slot>
           </div>
         `;

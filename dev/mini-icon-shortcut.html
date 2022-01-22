@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<on-shortcut.htmlhead>
+    <meta charset="utf-8" />
+    <title>&lt;mini-taskbar > Demo</title>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    <script type="module" src="../src/mini.js"></script>
+    <script type="module" src="../src/mini-icon-shortcut.js"></script>
+</on-shortcut.htmlhead>
+<body style="margin: 0; padding: 0;">
+<table style="width:100%; height:100%">
+    <tr>
+        <td style="height:100px">
+            <mini-icon-shortcut name="Shortcut Name" fontSize="8" iconSize="32">
+                <mini-icon slot="icon" size="32" type="link"></mini-icon>
+            </mini-icon-shortcut>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
