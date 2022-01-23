@@ -40,8 +40,12 @@ export class MiniDesktop  extends LitElement {
         super();
         this.icons = undefined;
         this.background = undefined;
+        // stratch : 'mosaic', 'stretch', 'stretch-adjust', 'none'
         this.backgroundConfig = {
-            stretch: 'mosaic' // options : 'stretch', 'stretch-adjust', 'none'
+            stretch: 'mosaic',
+            iconSize: 32,
+            iconMargin: 32, // because of shortcut name at bottom of icon... // TODO check if iconMargin needs 2 values : left/right and top/bottom.
+            backgroundPadding: 15
         };
     }
 
@@ -49,17 +53,30 @@ export class MiniDesktop  extends LitElement {
         let iconsHtml = null;
         const classes = [];
 
-        console.log(this.icons);
         if(this.icons !== undefined && this.icons !== null) {
             this.icons = this.icons instanceof Array ? this.config : JSON.parse(this.icons);
-            iconsHtml = this.icons.map(item => {
-                return html`
-                    <mini-icon-shortcut name="${item.name}" fontSize="8" iconSize="${item.size}">
-                        <mini-icon slot="icon" src="${item.src}" size="${item.size}"
+
+            let y = this.backgroundConfig.backgroundPadding; let x = this.backgroundConfig.backgroundPadding;
+            const config = this.backgroundConfig;
+
+            iconsHtml = this.icons.map((item) => {
+                const result = html`
+                    <mini-icon-shortcut name="${item.name}" fontSize="8" iconSize="${config.iconSize}" top="${y}" left="${x}">
+                        <mini-icon slot="icon" src="${item.src}" size="${config.iconSize}"
                                    type="${item.type}" target="${item.target}">
                         </mini-icon>
                     </mini-icon-shortcut>
-                `
+                `;
+
+                y += (config.iconSize + config.iconMargin);
+                if(y >= (document.documentElement.getBoundingClientRect().height - config.iconSize - config.iconMargin)) {
+                    x += (config.iconSize + config.iconMargin);
+                    y = 0;
+                }
+
+                console.log(y, x);
+
+                return result;
             });
         }
 

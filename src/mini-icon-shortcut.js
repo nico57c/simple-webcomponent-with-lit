@@ -45,7 +45,9 @@ export class MiniIconShortcut  extends LitElement {
         return {
             name: {type: String},
             fontSize: {type: Number},
-            iconSize: {type: Number}
+            iconSize: {type: Number},
+            top: {type: Number},
+            left: {type: Number}
         };
     }
 
@@ -60,6 +62,8 @@ export class MiniIconShortcut  extends LitElement {
         this.style.fontSize = this.fontSize + 'px';
         this.style.width = (this.iconSize*1.5) + 'px';
         this.style.height = (this.iconSize + (this.fontSize*1.8)) + 'px';
+        if(this.top !== undefined) this.style.top = this.top + 'px';
+        if(this.left !== undefined) this.style.left = this.left + 'px';
 
         return html`
           <div class="mini-icon-shortcut" draggable="true" ondragstart="return false;" 
