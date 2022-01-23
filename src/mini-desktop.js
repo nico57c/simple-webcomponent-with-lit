@@ -25,6 +25,22 @@ export class MiniDesktop  extends LitElement {
             background-repeat: repeat;
             background-size: auto;
           }
+          
+          .mini-background-stretch-full {
+            background-size: cover;
+            background-repeat: no-repeat;
+          }
+
+          .mini-background-stretch-adjust {
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+          }
+
+          .mini-background-stretch-none {
+            background-repeat: no-repeat;
+            background-position: center;
+          }
         `;
     }
 
@@ -41,17 +57,24 @@ export class MiniDesktop  extends LitElement {
         this.icons = undefined;
         this.background = undefined;
         // stratch : 'mosaic', 'stretch', 'stretch-adjust', 'none'
-        this.backgroundConfig = {
+        this.defaultBackgroundConfig = {
             stretch: 'mosaic',
             iconSize: 32,
             iconMargin: 32, // because of shortcut name at bottom of icon... // TODO check if iconMargin needs 2 values : left/right and top/bottom.
-            backgroundPadding: 15
+            backgroundPadding: 15,
+            backgroundColor: 'black',
+            color: 'white'
         };
+
+        this.backgroundConfig = {...this.defaultBackgroundConfig};
     }
 
     render() {
         let iconsHtml = null;
         const classes = [];
+
+        // Set empty field with default value :
+        this.backgroundConfig = {...this.defaultBackgroundConfig, ...this.backgroundConfig};
 
         if(this.icons !== undefined && this.icons !== null) {
             this.icons = this.icons instanceof Array ? this.config : JSON.parse(this.icons);
@@ -61,7 +84,7 @@ export class MiniDesktop  extends LitElement {
 
             iconsHtml = this.icons.map((item) => {
                 const result = html`
-                    <mini-icon-shortcut name="${item.name}" fontSize="8" iconSize="${config.iconSize}" top="${y}" left="${x}">
+                    <mini-icon-shortcut name="${item.name}" fontSize="8" iconSize="${config.iconSize}" top="${y}" left="${x}" color="${config.color}">
                         <mini-icon slot="icon" src="${item.src}" size="${config.iconSize}"
                                    type="${item.type}" target="${item.target}">
                         </mini-icon>
@@ -87,7 +110,7 @@ export class MiniDesktop  extends LitElement {
             case 'stretch':
                 classes['mini-background-stretch-full'] = true;
             break;
-            case 'strech-adjust':
+            case 'stretch-adjust':
                 classes['mini-background-stretch-adjust'] = true;
             break;
             default:
@@ -96,6 +119,9 @@ export class MiniDesktop  extends LitElement {
                 classes['mini-background-stretch-none'] = true;
             break;
         }
+
+        this.style.backgroundColor = this.backgroundConfig.backgroundColor;
+        this.style.color = this.backgroundConfig.color;
 
         return html`
           <div class="mini-desktop ${classMap(classes)}" style="background-image: url('${this.background}')">

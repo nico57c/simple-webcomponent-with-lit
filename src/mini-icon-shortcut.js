@@ -25,7 +25,6 @@ export class MiniIconShortcut  extends LitElement {
           }
           
           .mini-icon-shortcut-name {
-            color: black;
             margin-top: auto;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -47,7 +46,8 @@ export class MiniIconShortcut  extends LitElement {
             fontSize: {type: Number},
             iconSize: {type: Number},
             top: {type: Number},
-            left: {type: Number}
+            left: {type: Number},
+            color: {type: String}
         };
     }
 
@@ -56,6 +56,7 @@ export class MiniIconShortcut  extends LitElement {
         this.name = '';
         this.fontSize = '4';
         this.dragging = MiniUtils.dragging;
+        this.color = 'black';
     }
 
     render() {
@@ -64,6 +65,7 @@ export class MiniIconShortcut  extends LitElement {
         this.style.height = (this.iconSize + (this.fontSize*1.8)) + 'px';
         if(this.top !== undefined) this.style.top = this.top + 'px';
         if(this.left !== undefined) this.style.left = this.left + 'px';
+        this.style.color = this.color;
 
         return html`
           <div class="mini-icon-shortcut" draggable="true" ondragstart="return false;" 
