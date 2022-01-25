@@ -63,15 +63,15 @@ export class MiniIconShortcut  extends LitElement {
         this.style.fontSize = this.fontSize + 'px';
         this.style.width = (this.iconSize*1.5) + 'px';
         this.style.height = (this.iconSize + (this.fontSize*1.8)) + 'px';
-        if(this.top !== undefined) this.style.top = this.top + 'px';
-        if(this.left !== undefined) this.style.left = this.left + 'px';
+        if(this.top !== undefined) this.style.top = (this.offsetTop + this.top) + 'px';
+        if(this.left !== undefined) this.style.left = (this.offsetLeft + this.left) + 'px';
         this.style.color = this.color;
 
         return html`
           <div class="mini-icon-shortcut" draggable="true" ondragstart="return false;" 
                @mousedown="${this.mouseDown.bind(this)}" @mouseup="${this.mouseUp.bind(this)}">
               <slot name="icon"></slot>
-              <div class="mini-icon-shortcut-name"
+              <div class="mini-icon-shortcut-name"  @mouseenter="${this.mouseOver.bind(this)}" @mouseout="${this.mouseOut.bind(this)}"
                    style="height: ${(this.fontSize*1.8) + 'px'}; line-height: ${(this.fontSize*1.8) + 'px'}; font-size: ${this.fontSize + 'px'}">
                   ${this.name}
               </div>
@@ -87,6 +87,16 @@ export class MiniIconShortcut  extends LitElement {
 
     mouseUp(event) {
         this.style.zIndex = this.savedZ;
+    }
+
+    mouseOut(event) {
+        clearTimeout(this.waitingOnTooltip);
+    }
+
+    mouseOver(event) {
+        this.waitingOnTooltip = setTimeout(() => {
+            MiniUtils.tooltip(this.name, event.clientX, event.clientY, 2000);
+        }, 1500);
     }
 }
 

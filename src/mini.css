@@ -1,0 +1,10 @@
+.mini-tooltip {
+    background-color: #F5F5DCFF;
+    padding: .2em;
+    font-size: .5em;
+    color: #555;
+    border-radius: 3px;
+    border: 1px solid #555;
+    margin: 8px;
+    white-space: nowrap;
+}

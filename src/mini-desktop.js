@@ -97,8 +97,6 @@ export class MiniDesktop  extends LitElement {
                     y = 0;
                 }
 
-                console.log(y, x);
-
                 return result;
             });
         }

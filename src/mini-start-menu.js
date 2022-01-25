@@ -14,6 +14,7 @@ export class MiniStartMenu extends LitElement {
         display: flex;
         cursor: pointer;
         user-select: none;
+        background-color: white;
       }
       
       .mini-start-menu {

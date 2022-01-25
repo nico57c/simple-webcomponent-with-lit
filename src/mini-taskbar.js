@@ -15,7 +15,6 @@ export class MiniTaskbar extends LitElement {
         return css`
       :host {
         display: flex;
-        position: absolute;
         cursor: pointer;
         user-select: none;
       }

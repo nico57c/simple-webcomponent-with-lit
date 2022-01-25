@@ -1,3 +1,4 @@
+import {render, html} from 'lit';
 
 export class MiniUtils {
 
@@ -17,6 +18,23 @@ export class MiniUtils {
      */
     static queryAllSlot(name, element) {
         return element.renderRoot.querySelectorAll(`slot[name=${name}]`);
+    }
+
+    static tooltip(message, x, y, timeout) {
+        const tooltipId = 'tooltipid_' +  Math.floor(Math.random()*1000000);
+        const tooltip = html`
+            <span class="mini-tooltip" id="${tooltipId}">${message}</span>
+        `;
+
+        const element = render(tooltip, document.body).startNode.nextElementSibling;
+        element.style.display = 'block';
+        element.style.position = 'absolute';
+        element.style.top = y + 'px';
+        element.style.left = x + 'px';
+
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, timeout);
     }
 
     static dragging(event) {
